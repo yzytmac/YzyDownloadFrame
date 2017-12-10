@@ -16,6 +16,7 @@ import java.util.concurrent.Executors;
 public class DownLoadService extends Service {
     /*正在下载的集合*/
     private HashMap<String, DownLoadTask> mDownLoadingTasks = new HashMap<>();
+    /*线程池*/
     private ExecutorService mExecutor;
 
     @Nullable
@@ -35,10 +36,14 @@ public class DownLoadService extends Service {
         DownLoadEntity vEntity = (DownLoadEntity) intent.getSerializableExtra(Constants.KEY_DOWNLOAD_ENTITY);
         int action = intent.getIntExtra(Constants.KEY_DOWNLOAD_ACTION, -1);
         doAction(action, vEntity);
-
         return super.onStartCommand(intent, flags, startId);
     }
 
+    /**
+     * 根据action做相应的操作
+     * @param pAction
+     * @param pEntity
+     */
     private void doAction(int pAction, DownLoadEntity pEntity) {
         switch (pAction) {
             case Constants.KEY_DOWNLOAD_ACTION_ADD:
@@ -57,26 +62,6 @@ public class DownLoadService extends Service {
         }
     }
 
-    private void cancleDownLoad(DownLoadEntity pEntity) {
-        /*暂停后就应该从正在下载的集合中移除*/
-        DownLoadTask vTask = mDownLoadingTasks.remove(pEntity.id);
-        if (vTask != null) {
-            vTask.cancle();
-        }
-    }
-
-    private void resumeDownLoad(DownLoadEntity pEntity) {
-        startDownLoad(pEntity);
-    }
-
-    private void pauseDownLoad(DownLoadEntity pEntity) {
-        /*暂停后就应该从正在下载的集合中移除*/
-        DownLoadTask vTask = mDownLoadingTasks.remove(pEntity.id);
-        if (vTask != null) {
-            vTask.pause();
-        }
-    }
-
     /**
      * 开始下载
      *
@@ -87,4 +72,40 @@ public class DownLoadService extends Service {
         mDownLoadingTasks.put(pEntity.id, vTask);
         mExecutor.execute(vTask);
     }
+
+    /**
+     * 恢复下载
+     *
+     * @param pEntity
+     */
+    private void resumeDownLoad(DownLoadEntity pEntity) {
+        startDownLoad(pEntity);
+    }
+
+    /**
+     * 暂停下载
+     *
+     * @param pEntity
+     */
+    private void pauseDownLoad(DownLoadEntity pEntity) {
+        /*暂停后就应该从正在下载的集合中移除*/
+        DownLoadTask vTask = mDownLoadingTasks.remove(pEntity.id);
+        if (vTask != null) {
+            vTask.pause();
+        }
+    }
+
+    /**
+     * 取消下载
+     *
+     * @param pEntity
+     */
+    private void cancleDownLoad(DownLoadEntity pEntity) {
+        /*暂停后就应该从正在下载的集合中移除*/
+        DownLoadTask vTask = mDownLoadingTasks.remove(pEntity.id);
+        if (vTask != null) {
+            vTask.cancle();
+        }
+    }
+
 }
