@@ -30,18 +30,33 @@ public class DownLoadManager {
         vIntent.putExtra(Constants.KEY_DOWNLOAD_ACTION,Constants.KEY_DOWNLOAD_ACTION_ADD);
         mContext.startService(vIntent);
     }
+
+    /**
+     * 暂停下载
+     * @param pEntity
+     */
     public void pause(DownLoadEntity pEntity){
         Intent vIntent = new Intent(mContext,DownLoadService.class);
         vIntent.putExtra(Constants.KEY_DOWNLOAD_ENTITY ,pEntity);
         vIntent.putExtra(Constants.KEY_DOWNLOAD_ACTION,Constants.KEY_DOWNLOAD_ACTION_PAUSE);
         mContext.startService(vIntent);
     }
+
+    /**
+     * 恢复下载
+     * @param pEntity
+     */
     public void resume(DownLoadEntity pEntity){
         Intent vIntent = new Intent(mContext,DownLoadService.class);
         vIntent.putExtra(Constants.KEY_DOWNLOAD_ENTITY ,pEntity);
         vIntent.putExtra(Constants.KEY_DOWNLOAD_ACTION,Constants.KEY_DOWNLOAD_ACTION_RESUME);
         mContext.startService(vIntent);
     }
+
+    /**
+     * 取消下载
+     * @param pEntity
+     */
     public void cancle(DownLoadEntity pEntity){
         Intent vIntent = new Intent(mContext,DownLoadService.class);
         vIntent.putExtra(Constants.KEY_DOWNLOAD_ENTITY ,pEntity);
@@ -49,10 +64,19 @@ public class DownLoadManager {
         mContext.startService(vIntent);
     }
 
-    public void addObserver(DataObserver pWatcher){
-        DataObservable.getInstance().addObserver(pWatcher);
+    /**
+     * 添加监听器
+     * @param pObserver
+     */
+    public void addObserver(DataObserver pObserver){
+        DataObservable.getInstance().addObserver(pObserver);
     }
-    public void deleteObserver(DataObserver pWatcher){
-        DataObservable.getInstance().deleteObserver(pWatcher);
+
+    /**
+     * 产出监听器
+     * @param pObserver
+     */
+    public void deleteObserver(DataObserver pObserver){
+        DataObservable.getInstance().deleteObserver(pObserver);
     }
 }
