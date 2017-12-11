@@ -2,7 +2,9 @@ package com.example.yzydownloads;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
 import android.support.annotation.Nullable;
 
 import java.util.HashMap;
@@ -18,6 +20,11 @@ public class DownLoadService extends Service {
     private HashMap<String, DownLoadTask> mDownLoadingTasks = new HashMap<>();
     /*线程池*/
     private ExecutorService mExecutor;
+    private Handler mHandler = new Handler(){
+        public void handleMessage(Message msg){
+            DataObservable.getInstance().postStatus((DownLoadEntity) msg.obj);
+        }
+    };
 
     @Nullable
     @Override
@@ -68,7 +75,7 @@ public class DownLoadService extends Service {
      * @param pEntity
      */
     private void startDownLoad(DownLoadEntity pEntity) {
-        DownLoadTask vTask = new DownLoadTask(pEntity);
+        DownLoadTask vTask = new DownLoadTask(mHandler,pEntity);
         mDownLoadingTasks.put(pEntity.id, vTask);
         mExecutor.execute(vTask);
     }

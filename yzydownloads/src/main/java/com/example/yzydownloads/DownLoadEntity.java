@@ -10,17 +10,26 @@ public class DownLoadEntity implements Serializable{
     public String id;
     public String name;
     public String url;
-    public enum DownLoadStatus{waiting,downloading,pause,cancle,resume,complete}
+    public enum DownLoadStatus{idle,waiting,downloading,pause,cancle,resume,complete}
     public DownLoadStatus status;
     public int currentLength;
     public int totalLength;
 
     @Override
     public String toString() {
-        return "DownLoadEntity{" +
-                ", status=" + status +
+        return "status=" + status +
                 ", currentLength=" + currentLength +
-                ", totalLength=" + totalLength +
-                '}';
+                ", totalLength=" + totalLength;
+    }
+
+    /*只要id相等，我们就认为两个对象是相等的，就是同一个对象*/
+    @Override
+    public boolean equals(Object obj) {
+        return this.hashCode() == obj.hashCode();
+    }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
     }
 }
