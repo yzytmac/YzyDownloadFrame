@@ -9,7 +9,7 @@ import android.os.SystemClock;
 public class DownLoadTask implements Runnable {
     private YzyHandler mHandler;
     private DownLoadEntity mEntity;
-    private boolean isPause, isCancle;
+    private volatile boolean isPause, isCancle;
 
     public DownLoadTask(YzyHandler pHandler, DownLoadEntity pEntity) {
         mHandler = pHandler;
@@ -32,25 +32,25 @@ public class DownLoadTask implements Runnable {
     private void start() {
         mEntity.status = DownLoadEntity.DownLoadStatus.downloading;
 //        DataObservable.getInstance().postStatus(mEntity);
-        mHandler.sendMsg(mEntity);
+        mHandler.update(mEntity);
 
         for (int i = mEntity.currentLength; i < mEntity.totalLength; i++) {
             if (isCancle || isPause) {
                 mEntity.status = isPause ? DownLoadEntity.DownLoadStatus.pause : DownLoadEntity.DownLoadStatus.cancle;
 //                DataObservable.getInstance().postStatus(mEntity);
-                mHandler.sendMsg(mEntity);
+                mHandler.update(mEntity);
                 // TODO: 2017/12/10
                 return;
             }
             i += 10;
             mEntity.currentLength += 10;
 //            DataObservable.getInstance().postStatus(mEntity);
-            mHandler.sendMsg(mEntity);
+            mHandler.update(mEntity);
             SystemClock.sleep(1000);
         }
         mEntity.status = DownLoadEntity.DownLoadStatus.complete;
 //        DataObservable.getInstance().postStatus(mEntity);
-        mHandler.sendMsg(mEntity);
+        mHandler.update(mEntity);
     }
 
 

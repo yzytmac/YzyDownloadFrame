@@ -15,7 +15,7 @@ public class YzyHandler extends Handler {
             case complete:
             case cancle:
             case pause:
-                mService.checkNext(vEntity);
+                mService.checkNext();
                 break;
             default:
         }
@@ -23,7 +23,7 @@ public class YzyHandler extends Handler {
         DataObservable.getInstance().postStatus(vEntity);
     }
 
-    public void sendMsg(DownLoadEntity pEntity) {
+    public void update(DownLoadEntity pEntity) {
         Message msg = obtainMessage();
         msg.obj = pEntity;
         sendMessage(msg);

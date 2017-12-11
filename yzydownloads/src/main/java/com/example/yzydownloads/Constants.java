@@ -12,4 +12,6 @@ public class Constants {
     public static final int KEY_DOWNLOAD_ACTION_RESUME = 2;//恢复下载
     public static final int KEY_DOWNLOAD_ACTION_CANCLE = 3;//取消下载
     public static final int MAX_DOWNLOAD_TASKS_NUM = 3;//最大下载任务数
+    public static final int KEY_DOWNLOAD_ACTION_PAUSE_ALL = 4;//暂停全部
+    public static final int KEY_DOWNLOAD_ACTION_RESUME_ALL = 5;//恢复全部
 }

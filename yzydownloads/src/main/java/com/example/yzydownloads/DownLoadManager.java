@@ -10,11 +10,13 @@ import android.content.Intent;
 public class DownLoadManager {
     private Context mContext;
     private static DownLoadManager instance;
-    private DownLoadManager(Context pContext){
+
+    private DownLoadManager(Context pContext) {
         this.mContext = pContext;
     }
-    public synchronized static DownLoadManager getInstance(Context pContext){
-        if(instance==null) {
+
+    public synchronized static DownLoadManager getInstance(Context pContext) {
+        if (instance == null) {
             instance = new DownLoadManager(pContext);
         }
         return instance;
@@ -22,61 +24,87 @@ public class DownLoadManager {
 
     /**
      * 添加下载任务
+     *
      * @param pEntity
      */
-    public void add(DownLoadEntity pEntity){
-        Intent vIntent = new Intent(mContext,DownLoadService.class);
-        vIntent.putExtra(Constants.KEY_DOWNLOAD_ENTITY ,pEntity);
-        vIntent.putExtra(Constants.KEY_DOWNLOAD_ACTION,Constants.KEY_DOWNLOAD_ACTION_ADD);
+    public void add(DownLoadEntity pEntity) {
+        Intent vIntent = new Intent(mContext, DownLoadService.class);
+        vIntent.putExtra(Constants.KEY_DOWNLOAD_ENTITY, pEntity);
+        vIntent.putExtra(Constants.KEY_DOWNLOAD_ACTION, Constants.KEY_DOWNLOAD_ACTION_ADD);
         mContext.startService(vIntent);
     }
 
     /**
      * 暂停下载
+     *
      * @param pEntity
      */
-    public void pause(DownLoadEntity pEntity){
-        Intent vIntent = new Intent(mContext,DownLoadService.class);
-        vIntent.putExtra(Constants.KEY_DOWNLOAD_ENTITY ,pEntity);
-        vIntent.putExtra(Constants.KEY_DOWNLOAD_ACTION,Constants.KEY_DOWNLOAD_ACTION_PAUSE);
+    public void pause(DownLoadEntity pEntity) {
+        Intent vIntent = new Intent(mContext, DownLoadService.class);
+        vIntent.putExtra(Constants.KEY_DOWNLOAD_ENTITY, pEntity);
+        vIntent.putExtra(Constants.KEY_DOWNLOAD_ACTION, Constants.KEY_DOWNLOAD_ACTION_PAUSE);
+        mContext.startService(vIntent);
+    }
+
+    /**
+     * 暂停全部
+     *
+     */
+    public void pauseAll() {
+        Intent vIntent = new Intent(mContext, DownLoadService.class);
+        vIntent.putExtra(Constants.KEY_DOWNLOAD_ACTION, Constants.KEY_DOWNLOAD_ACTION_PAUSE_ALL);
         mContext.startService(vIntent);
     }
 
     /**
      * 恢复下载
+     *
      * @param pEntity
      */
-    public void resume(DownLoadEntity pEntity){
-        Intent vIntent = new Intent(mContext,DownLoadService.class);
-        vIntent.putExtra(Constants.KEY_DOWNLOAD_ENTITY ,pEntity);
-        vIntent.putExtra(Constants.KEY_DOWNLOAD_ACTION,Constants.KEY_DOWNLOAD_ACTION_RESUME);
+    public void resume(DownLoadEntity pEntity) {
+        Intent vIntent = new Intent(mContext, DownLoadService.class);
+        vIntent.putExtra(Constants.KEY_DOWNLOAD_ENTITY, pEntity);
+        vIntent.putExtra(Constants.KEY_DOWNLOAD_ACTION, Constants.KEY_DOWNLOAD_ACTION_RESUME);
+        mContext.startService(vIntent);
+    }
+
+    /**
+     * 恢复全部
+     *
+     */
+    public void resumeAll() {
+        Intent vIntent = new Intent(mContext, DownLoadService.class);
+        vIntent.putExtra(Constants.KEY_DOWNLOAD_ACTION, Constants.KEY_DOWNLOAD_ACTION_RESUME_ALL);
         mContext.startService(vIntent);
     }
 
     /**
      * 取消下载
+     *
      * @param pEntity
      */
-    public void cancle(DownLoadEntity pEntity){
-        Intent vIntent = new Intent(mContext,DownLoadService.class);
-        vIntent.putExtra(Constants.KEY_DOWNLOAD_ENTITY ,pEntity);
-        vIntent.putExtra(Constants.KEY_DOWNLOAD_ACTION,Constants.KEY_DOWNLOAD_ACTION_CANCLE);
+    public void cancle(DownLoadEntity pEntity) {
+        Intent vIntent = new Intent(mContext, DownLoadService.class);
+        vIntent.putExtra(Constants.KEY_DOWNLOAD_ENTITY, pEntity);
+        vIntent.putExtra(Constants.KEY_DOWNLOAD_ACTION, Constants.KEY_DOWNLOAD_ACTION_CANCLE);
         mContext.startService(vIntent);
     }
 
     /**
      * 添加监听器
+     *
      * @param pObserver
      */
-    public void addObserver(DataObserver pObserver){
+    public void addObserver(DataObserver pObserver) {
         DataObservable.getInstance().addObserver(pObserver);
     }
 
     /**
      * 产出监听器
+     *
      * @param pObserver
      */
-    public void deleteObserver(DataObserver pObserver){
+    public void deleteObserver(DataObserver pObserver) {
         DataObservable.getInstance().deleteObserver(pObserver);
     }
 }

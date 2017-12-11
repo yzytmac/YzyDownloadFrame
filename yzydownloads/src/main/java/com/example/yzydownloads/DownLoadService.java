@@ -6,6 +6,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -24,7 +25,7 @@ public class DownLoadService extends Service {
 
 
 
-    public void checkNext(DownLoadEntity pEntity) {
+    public void checkNext() {
         DownLoadEntity vEntity = mWaitingDeque.poll();
         if (vEntity != null) {
             startDownLoad(vEntity);
@@ -48,7 +49,7 @@ public class DownLoadService extends Service {
         DownLoadEntity vEntity = (DownLoadEntity) intent.getSerializableExtra(Constants.KEY_DOWNLOAD_ENTITY);
         int action = intent.getIntExtra(Constants.KEY_DOWNLOAD_ACTION, -1);
         doAction(action, vEntity);
-        return super.onStartCommand(intent, flags, startId);
+        return START_NOT_STICKY;
     }
 
     /**
@@ -71,15 +72,39 @@ public class DownLoadService extends Service {
             case Constants.KEY_DOWNLOAD_ACTION_CANCLE:
                 cancleDownLoad(pEntity);
                 break;
+            case Constants.KEY_DOWNLOAD_ACTION_PAUSE_ALL:
+                pauseAll();
+                break;
+            case Constants.KEY_DOWNLOAD_ACTION_RESUME_ALL:
+                resumeAll();
+                break;
             default:
         }
+    }
+
+    private void resumeAll() {
+
+        
+    }
+
+    private void pauseAll() {
+        for (DownLoadEntity vEntity : mWaitingDeque) {
+            vEntity.status = DownLoadEntity.DownLoadStatus.pause;
+            mHandler.update(vEntity);
+        }
+        mWaitingDeque.clear();
+        for (Map.Entry<String, DownLoadTask> vEntrySet : mDownLoadingTasks.entrySet()) {
+            vEntrySet.getValue().pause();
+        }
+        mDownLoadingTasks.clear();
+
     }
 
     private void addDownLoad(DownLoadEntity pEntity) {
         if (mDownLoadingTasks.size() >= Constants.MAX_DOWNLOAD_TASKS_NUM) {
             mWaitingDeque.offer(pEntity);
             pEntity.status = DownLoadEntity.DownLoadStatus.waiting;
-            mHandler.sendMsg(pEntity);
+            mHandler.update(pEntity);
         } else {
             startDownLoad(pEntity);
         }
@@ -118,7 +143,7 @@ public class DownLoadService extends Service {
         }else {
             mWaitingDeque.remove(pEntity);
             pEntity.status = DownLoadEntity.DownLoadStatus.pause;
-            mHandler.sendMsg(pEntity);
+            mHandler.update(pEntity);
         }
     }
 
@@ -135,7 +160,7 @@ public class DownLoadService extends Service {
         }else {
             mWaitingDeque.remove(pEntity);
             pEntity.status = DownLoadEntity.DownLoadStatus.cancle;
-            mHandler.sendMsg(pEntity);
+            mHandler.update(pEntity);
         }
     }
 
