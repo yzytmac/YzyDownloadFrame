@@ -7,6 +7,37 @@
     android:orientation="vertical"
     tools:context="com.example.yzy.yzydownloadframe.MainActivity">
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:background="@color/colorPrimary"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="杨震宇下载框架"
+            android:textColor="#fff"
+            android:textSize="24sp"/>
+
+        <Button
+            android:onClick="onClick"
+            android:id="@+id/pause_all_bt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="暂停全部"/>
+
+        <Button
+            android:onClick="onClick"
+            android:id="@+id/cancle_all_bt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="取消全部"/>
+    </LinearLayout>
+
     <ListView
         android:id="@+id/lv"
         android:layout_width="match_parent"

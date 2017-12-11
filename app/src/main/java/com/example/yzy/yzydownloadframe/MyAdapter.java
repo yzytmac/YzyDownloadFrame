@@ -65,6 +65,10 @@ public class MyAdapter extends BaseAdapter {
             vHolder.bt.setText("暂停");
         }else if(vEntity.status == DownLoadEntity.DownLoadStatus.pause) {
             vHolder.bt.setText("恢复");
+        }else if(vEntity.status == DownLoadEntity.DownLoadStatus.waiting) {
+            vHolder.bt.setText("等待");
+        }else if(vEntity.status == DownLoadEntity.DownLoadStatus.complete) {
+            vHolder.bt.setText("完成");
         }
         vHolder.bt.setOnClickListener(new View.OnClickListener() {
             @Override

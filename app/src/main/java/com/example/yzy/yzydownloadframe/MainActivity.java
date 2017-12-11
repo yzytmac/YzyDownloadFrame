@@ -1,8 +1,11 @@
 package com.example.yzy.yzydownloadframe;
 
+import android.app.ActionBar;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 
 import com.example.yzydownloads.DataObserver;
@@ -36,7 +39,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mLv = (ListView) findViewById(R.id.lv);
-        for (int i = 0; i < 5; i++) {
+
+
+        for (int i = 0; i < 10; i++) {
             DownLoadEntity vEntity = new DownLoadEntity();
             vEntity.status = DownLoadEntity.DownLoadStatus.idle;
             vEntity.totalLength = 100;
@@ -64,6 +69,18 @@ public class MainActivity extends AppCompatActivity {
         mDownLoadManager.deleteObserver(observer);
     }
 
+    public void onClick(View pView){
+        switch(pView.getId()){
+            case R.id.pause_all_bt:
+                mDownLoadManager.pauseAll();
+                break;
+            case R.id.cancle_all_bt:
+                mDownLoadManager.resumeAll();
+                break;
+            default:
+        }
+    }
+
 
     public void onBtClick(DownLoadEntity pEntity) {
         switch (pEntity.status){
@@ -74,6 +91,7 @@ public class MainActivity extends AppCompatActivity {
                 mDownLoadManager.resume(pEntity);
                 break;
             case downloading:
+            case waiting:
                 mDownLoadManager.pause(pEntity);
                 break;
             default:
