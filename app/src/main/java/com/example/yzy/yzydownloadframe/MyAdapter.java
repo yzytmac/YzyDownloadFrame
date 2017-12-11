@@ -58,12 +58,12 @@ public class MyAdapter extends BaseAdapter {
         }
         vHolder = (ViewHolder) pView.getTag();
         final DownLoadEntity vEntity = mDatas.get(position);
-        vHolder.tv.setText("进度:"+(vEntity.currentLength/ vEntity.totalLength));
+        vHolder.tv.setText("进度:"+vEntity.currentLength+"/"+ vEntity.totalLength);
         if(vEntity.status == DownLoadEntity.DownLoadStatus.idle) {
             vHolder.bt.setText("开始");
-        }else if(vEntity.status == DownLoadEntity.DownLoadStatus.pause) {
+        }else if(vEntity.status == DownLoadEntity.DownLoadStatus.downloading) {
             vHolder.bt.setText("暂停");
-        }else if(vEntity.status == DownLoadEntity.DownLoadStatus.resume) {
+        }else if(vEntity.status == DownLoadEntity.DownLoadStatus.pause) {
             vHolder.bt.setText("恢复");
         }
         vHolder.bt.setOnClickListener(new View.OnClickListener() {
