@@ -2,14 +2,13 @@ package com.example.yzydownloads;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.annotation.Nullable;
 
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * Created by yzy on 2017/12/10.
@@ -20,11 +19,17 @@ public class DownLoadService extends Service {
     private HashMap<String, DownLoadTask> mDownLoadingTasks = new HashMap<>();
     /*线程池*/
     private ExecutorService mExecutor;
-    private Handler mHandler = new Handler(){
-        public void handleMessage(Message msg){
-            DataObservable.getInstance().postStatus((DownLoadEntity) msg.obj);
+    private LinkedBlockingDeque<DownLoadEntity> mWaitingDeque = new LinkedBlockingDeque<>();
+    private YzyHandler mHandler = new YzyHandler(this);
+
+
+
+    public void checkNext(DownLoadEntity pEntity) {
+        DownLoadEntity vEntity = mWaitingDeque.poll();
+        if (vEntity != null) {
+            startDownLoad(vEntity);
         }
-    };
+    }
 
     @Nullable
     @Override
@@ -48,13 +53,14 @@ public class DownLoadService extends Service {
 
     /**
      * 根据action做相应的操作
+     *
      * @param pAction
      * @param pEntity
      */
     private void doAction(int pAction, DownLoadEntity pEntity) {
         switch (pAction) {
             case Constants.KEY_DOWNLOAD_ACTION_ADD:
-                startDownLoad(pEntity);
+                addDownLoad(pEntity);
                 break;
             case Constants.KEY_DOWNLOAD_ACTION_PAUSE:
                 pauseDownLoad(pEntity);
@@ -69,13 +75,23 @@ public class DownLoadService extends Service {
         }
     }
 
+    private void addDownLoad(DownLoadEntity pEntity) {
+        if (mDownLoadingTasks.size() >= Constants.MAX_DOWNLOAD_TASKS_NUM) {
+            mWaitingDeque.offer(pEntity);
+            pEntity.status = DownLoadEntity.DownLoadStatus.waiting;
+            mHandler.sendMsg(pEntity);
+        } else {
+            startDownLoad(pEntity);
+        }
+    }
+
     /**
      * 开始下载
      *
      * @param pEntity
      */
     private void startDownLoad(DownLoadEntity pEntity) {
-        DownLoadTask vTask = new DownLoadTask(mHandler,pEntity);
+        DownLoadTask vTask = new DownLoadTask(mHandler, pEntity);
         mDownLoadingTasks.put(pEntity.id, vTask);
         mExecutor.execute(vTask);
     }
@@ -86,7 +102,7 @@ public class DownLoadService extends Service {
      * @param pEntity
      */
     private void resumeDownLoad(DownLoadEntity pEntity) {
-        startDownLoad(pEntity);
+        addDownLoad(pEntity);
     }
 
     /**
@@ -99,6 +115,10 @@ public class DownLoadService extends Service {
         DownLoadTask vTask = mDownLoadingTasks.remove(pEntity.id);
         if (vTask != null) {
             vTask.pause();
+        }else {
+            mWaitingDeque.remove(pEntity);
+            pEntity.status = DownLoadEntity.DownLoadStatus.pause;
+            mHandler.sendMsg(pEntity);
         }
     }
 
@@ -112,6 +132,10 @@ public class DownLoadService extends Service {
         DownLoadTask vTask = mDownLoadingTasks.remove(pEntity.id);
         if (vTask != null) {
             vTask.cancle();
+        }else {
+            mWaitingDeque.remove(pEntity);
+            pEntity.status = DownLoadEntity.DownLoadStatus.cancle;
+            mHandler.sendMsg(pEntity);
         }
     }
 
