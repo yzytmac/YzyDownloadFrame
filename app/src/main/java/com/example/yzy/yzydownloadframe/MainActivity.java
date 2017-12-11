@@ -5,31 +5,52 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListView;
 
 import com.example.yzydownloads.DataObserver;
 import com.example.yzydownloads.DownLoadEntity;
 import com.example.yzydownloads.DownLoadManager;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity {
     private DownLoadEntity mEntity;
+    private ArrayList<DownLoadEntity> mDatas = new ArrayList<>();
     private DataObserver observer = new DataObserver() {
         @Override
         public void notifyUpdate(DownLoadEntity pEntity) {
             mEntity = pEntity;
-            if(mEntity.status== DownLoadEntity.DownLoadStatus.cancle) {
-                mEntity=null;
+            int i = mDatas.indexOf(pEntity);//重写了equals方法，id相同就认为是同一个对象，但是其他属性不同
+            if(i!=-1) {
+                mDatas.remove(i);
+                mDatas.add(i,pEntity);//替换的其实是除id以外的其他属性
+                mAdapter.notifyDataSetChanged();
             }
             Log.e("yzy", "notifyUpdate: " + pEntity);
         }
     };
     private DownLoadManager mDownLoadManager;
-    private Button mPauseBt;
+    private ListView mLv;
+    private MyAdapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mPauseBt = (Button) findViewById(R.id.id_pause);
+        mLv = (ListView) findViewById(R.id.lv);
+        for (int i = 0; i < 5; i++) {
+            DownLoadEntity vEntity = new DownLoadEntity();
+            vEntity.status = DownLoadEntity.DownLoadStatus.idle;
+            vEntity.totalLength = 100;
+            vEntity.currentLength = 0;
+            vEntity.name = "jpg"+i;
+            vEntity.id = ""+i;
+            vEntity.url = "www.baidu.com"+i;
+            mDatas.add(vEntity);
+        }
+        mAdapter = new MyAdapter(this);
+        mLv.setAdapter(mAdapter);
+        mAdapter.setData(mDatas);
         mDownLoadManager = DownLoadManager.getInstance(this);
     }
 
@@ -45,31 +66,19 @@ public class MainActivity extends AppCompatActivity {
         mDownLoadManager.deleteObserver(observer);
     }
 
-    public void onClick(View pView) {
-        if (mEntity == null) {
-            mEntity = new DownLoadEntity();
-            mEntity.id = "1";
-            mEntity.name = "test.jpg";
-            mEntity.url = "api.stay4it.com/uploads/test.jpg";
-        }
-        switch (pView.getId()) {
-            case R.id.id_start:
-                mDownLoadManager.add(mEntity);
+
+    public void onBtClick(DownLoadEntity pEntity) {
+        switch (pEntity.status){
+            case idle:
+                mDownLoadManager.add(pEntity);
                 break;
-            case R.id.id_pause:
-                if (mEntity.status == DownLoadEntity.DownLoadStatus.downloading) {
-                    mDownLoadManager.pause(mEntity);
-                    mPauseBt.setText("恢复");
-                } else if (mEntity.status == DownLoadEntity.DownLoadStatus.pause) {
-                    mDownLoadManager.resume(mEntity);
-                    mPauseBt.setText("暂停");
-                }
+            case pause:
+                mDownLoadManager.resume(pEntity);
                 break;
-            case R.id.id_cancle:
-                mDownLoadManager.cancle(mEntity);
+            case downloading:
+                mDownLoadManager.pause(pEntity);
                 break;
             default:
         }
-
     }
 }
