@@ -6,6 +6,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -91,8 +92,12 @@ public class DownLoadService extends Service {
     }
 
     private void resumeAll() {
-
-        
+        ArrayList<DownLoadEntity> vPausedEntrys = DataObservable.getInstance().getPausedEntrys();
+        if(vPausedEntrys!=null) {
+            for (DownLoadEntity vEntry : vPausedEntrys) {
+                addDownLoad(vEntry);
+            }
+        }
     }
 
     private void pauseAll() {

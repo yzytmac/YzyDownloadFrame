@@ -23,9 +23,9 @@ public class MainActivity extends AppCompatActivity {
         public void notifyUpdate(DownLoadEntity pEntity) {
             mEntity = pEntity;
             int i = mDatas.indexOf(pEntity);//重写了equals方法，id相同就认为是同一个对象，但是其他属性不同
-            if(i!=-1) {
+            if (i != -1) {
                 mDatas.remove(i);
-                mDatas.add(i,pEntity);//替换的其实是除id以外的其他属性
+                mDatas.add(i, pEntity);//替换的其实是除id以外的其他属性
                 mAdapter.notifyDataSetChanged();
             }
             Log.e("yzy", "notifyUpdate: " + pEntity);
@@ -34,12 +34,15 @@ public class MainActivity extends AppCompatActivity {
     private DownLoadManager mDownLoadManager;
     private ListView mLv;
     private MyAdapter mAdapter;
+    private Button mPauseAllBt;
+    private int i = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mLv = (ListView) findViewById(R.id.lv);
+        mPauseAllBt = (Button) findViewById(R.id.pause_all_bt);
 
 
         for (int i = 0; i < 10; i++) {
@@ -47,9 +50,9 @@ public class MainActivity extends AppCompatActivity {
             vEntity.status = DownLoadEntity.DownLoadStatus.idle;
             vEntity.totalLength = 100;
             vEntity.currentLength = 0;
-            vEntity.name = "jpg"+i;
-            vEntity.id = ""+i;
-            vEntity.url = "www.baidu.com"+i;
+            vEntity.name = "jpg" + i;
+            vEntity.id = "" + i;
+            vEntity.url = "www.baidu.com" + i;
             mDatas.add(vEntity);
         }
         mAdapter = new MyAdapter(this);
@@ -70,10 +73,16 @@ public class MainActivity extends AppCompatActivity {
         mDownLoadManager.deleteObserver(observer);
     }
 
-    public void onClick(View pView){
-        switch(pView.getId()){
+    public void onClick(View pView) {
+        switch (pView.getId()) {
             case R.id.pause_all_bt:
-                mDownLoadManager.pauseAll();
+                if (i++ % 2 == 0) {
+                    mDownLoadManager.pauseAll();
+                    mPauseAllBt.setText("恢复全部");
+                }else {
+                    mDownLoadManager.resumeAll();
+                    mPauseAllBt.setText("暂停全部");
+                }
                 break;
             case R.id.cancle_all_bt:
                 mDownLoadManager.resumeAll();
@@ -84,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void onBtClick(DownLoadEntity pEntity) {
-        switch (pEntity.status){
+        switch (pEntity.status) {
             case idle:
                 mDownLoadManager.add(pEntity);
                 break;
