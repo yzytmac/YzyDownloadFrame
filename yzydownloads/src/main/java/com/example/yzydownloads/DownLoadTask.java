@@ -34,7 +34,7 @@ public class DownLoadTask implements Runnable {
 //        DataObservable.getInstance().postStatus(mEntity);
         mHandler.update(mEntity);
 
-        for (int i = mEntity.currentLength; i < mEntity.totalLength; i++) {
+        for (int i = mEntity.currentLength; i < mEntity.totalLength; ) {
             if (isCancle || isPause) {
                 mEntity.status = isPause ? DownLoadEntity.DownLoadStatus.pause : DownLoadEntity.DownLoadStatus.cancle;
 //                DataObservable.getInstance().postStatus(mEntity);
@@ -42,7 +42,7 @@ public class DownLoadTask implements Runnable {
                 // TODO: 2017/12/10
                 return;
             }
-            i += 10;
+            i+=10;
             mEntity.currentLength += 10;
 //            DataObservable.getInstance().postStatus(mEntity);
             mHandler.update(mEntity);

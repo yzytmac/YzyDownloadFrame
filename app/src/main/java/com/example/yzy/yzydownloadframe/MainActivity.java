@@ -7,6 +7,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.yzydownloads.DataObserver;
 import com.example.yzydownloads.DownLoadEntity;
@@ -93,6 +94,10 @@ public class MainActivity extends AppCompatActivity {
             case downloading:
             case waiting:
                 mDownLoadManager.pause(pEntity);
+                break;
+            case complete:
+                Toast.makeText(MainActivity.this, "已经完成啦，别点啦", Toast.LENGTH_SHORT).show();
+
                 break;
             default:
         }

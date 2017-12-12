@@ -58,6 +58,12 @@ public class MyAdapter extends BaseAdapter {
         }
         vHolder = (ViewHolder) pView.getTag();
         final DownLoadEntity vEntity = mDatas.get(position);
+        vHolder.bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View pView) {
+                mActivity.onBtClick(vEntity);
+            }
+        });
         vHolder.tv.setText("进度:"+vEntity.currentLength+"/"+ vEntity.totalLength);
         if(vEntity.status == DownLoadEntity.DownLoadStatus.idle) {
             vHolder.bt.setText("开始");
@@ -70,12 +76,7 @@ public class MyAdapter extends BaseAdapter {
         }else if(vEntity.status == DownLoadEntity.DownLoadStatus.complete) {
             vHolder.bt.setText("完成");
         }
-        vHolder.bt.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View pView) {
-                mActivity.onBtClick(vEntity);
-            }
-        });
+
         return pView;
     }
 

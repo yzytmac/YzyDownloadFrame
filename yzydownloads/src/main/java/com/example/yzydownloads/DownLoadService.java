@@ -4,6 +4,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -25,10 +26,13 @@ public class DownLoadService extends Service {
 
 
 
-    public void checkNext() {
+    public void checkNext(DownLoadEntity pEntity) {
+        //当暂停、完成、取消时就要从下载队列中移除；
+        mDownLoadingTasks.remove(pEntity);
+        //从等待队列中取出开始下载，
         DownLoadEntity vEntity = mWaitingDeque.poll();
         if (vEntity != null) {
-            startDownLoad(vEntity);
+            addDownLoad(vEntity);
         }
     }
 
@@ -48,7 +52,11 @@ public class DownLoadService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         DownLoadEntity vEntity = (DownLoadEntity) intent.getSerializableExtra(Constants.KEY_DOWNLOAD_ENTITY);
         int action = intent.getIntExtra(Constants.KEY_DOWNLOAD_ACTION, -1);
+        Log.e("yang", "点击前mDownLoadingTasks.size(): " + mDownLoadingTasks.size());
+        Log.e("yang", "点击前mWaitingDeque.size(): " + mWaitingDeque.size());
         doAction(action, vEntity);
+        Log.e("yang", "点击后mDownLoadingTasks.size(): " + mDownLoadingTasks.size());
+        Log.e("yang", "点击后mWaitingDeque.size(): " + mWaitingDeque.size());
         return START_NOT_STICKY;
     }
 
