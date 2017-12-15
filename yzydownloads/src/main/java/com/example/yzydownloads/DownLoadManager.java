@@ -27,7 +27,7 @@ public class DownLoadManager {
      *
      * @param pEntity
      */
-    public void add(DownLoadEntity pEntity) {
+    public void downLoad(DownLoadEntity pEntity) {
         Intent vIntent = new Intent(mContext, DownLoadService.class);
         vIntent.putExtra(Constants.KEY_DOWNLOAD_ENTITY, pEntity);
         vIntent.putExtra(Constants.KEY_DOWNLOAD_ACTION, Constants.KEY_DOWNLOAD_ACTION_ADD);

@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
     public void onStartIvClick(DownLoadEntity pEntity) {
         switch (pEntity.status) {
             case idle:
-                mDownLoadManager.add(pEntity);
+                mDownLoadManager.downLoad(pEntity);
                 break;
             case paused:
                 mDownLoadManager.resume(pEntity);
