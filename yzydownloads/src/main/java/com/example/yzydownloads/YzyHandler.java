@@ -23,9 +23,34 @@ public class YzyHandler extends Handler {
         DataObservable.getInstance().postStatus(vEntity);
     }
 
-    public void update(DownLoadEntity pEntity) {
+    private void update(DownLoadEntity pEntity) {
         Message msg = obtainMessage();
         msg.obj = pEntity;
         sendMessage(msg);
+    }
+
+    public void progressStatus(DownLoadEntity pEntity, int pProgress) {
+        pEntity.currentLength = pProgress;
+        if (pEntity.currentLength == pEntity.totalLength) {
+            pEntity.status = DownLoadEntity.DownLoadStatus.complete;
+        } else {
+            pEntity.status = DownLoadEntity.DownLoadStatus.downloading;
+        }
+        update(pEntity);
+    }
+
+    public void cancleStatus(DownLoadEntity pEntity) {
+        pEntity.status = DownLoadEntity.DownLoadStatus.cancled;
+        update(pEntity);
+    }
+
+    public void pauseStatus(DownLoadEntity pEntity) {
+        pEntity.status = DownLoadEntity.DownLoadStatus.paused;
+        update(pEntity);
+    }
+
+    public void waitStatus(DownLoadEntity pEntity) {
+        pEntity.status = DownLoadEntity.DownLoadStatus.waiting;
+        update(pEntity);
     }
 }

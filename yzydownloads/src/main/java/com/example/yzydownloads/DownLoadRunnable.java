@@ -24,22 +24,19 @@ public class DownLoadRunnable implements Runnable{
 
     @Override
     public void run() {
-        mEntity.status = DownLoadEntity.DownLoadStatus.downloading;
-        mHandler.update(mEntity);
-
         for (int i = mEntity.currentLength; i < mEntity.totalLength; ) {
             if (isCancle || isPause) {
-                mEntity.status = isPause ? DownLoadEntity.DownLoadStatus.paused : DownLoadEntity.DownLoadStatus.cancled;
-                mHandler.update(mEntity);
-                // TODO: 2017/12/10
+                if(isPause) {
+                    mHandler.pauseStatus(mEntity);
+                }
+                if(isCancle) {
+                    mHandler.cancleStatus(mEntity);
+                }
                 return;
             }
             i+=10;
-            mEntity.currentLength += 10;
-            mHandler.update(mEntity);
+            mHandler.progressStatus(mEntity,i);
             SystemClock.sleep(1000);
         }
-        mEntity.status = DownLoadEntity.DownLoadStatus.complete;
-        mHandler.update(mEntity);
     }
 }

@@ -105,8 +105,7 @@ public class DownLoadService extends Service {
 
     private void pauseAll() {
         for (DownLoadEntity vEntity : mWaitingDeque) {
-            vEntity.status = DownLoadEntity.DownLoadStatus.paused;
-            mHandler.update(vEntity);
+            mHandler.pauseStatus(vEntity);
         }
         mWaitingDeque.clear();
         for (Map.Entry<String, DownLoadTask> vEntrySet : mLoadingMap.entrySet()) {
@@ -119,8 +118,7 @@ public class DownLoadService extends Service {
     private void addDownLoad(DownLoadEntity pEntity) {
         if (mLoadingMap.size() >= Constants.MAX_DOWNLOAD_TASKS_NUM) {
             mWaitingDeque.offer(pEntity);
-            pEntity.status = DownLoadEntity.DownLoadStatus.waiting;
-            mHandler.update(pEntity);
+            mHandler.waitStatus(pEntity);
         } else {
             startDownLoad(pEntity);
         }
@@ -158,8 +156,7 @@ public class DownLoadService extends Service {
             vTask.pause();
         }else {
             mWaitingDeque.remove(pEntity);
-            pEntity.status = DownLoadEntity.DownLoadStatus.paused;
-            mHandler.update(pEntity);
+            mHandler.pauseStatus(pEntity);
         }
     }
 
@@ -175,8 +172,7 @@ public class DownLoadService extends Service {
             vTask.cancle();
         }else {
             mWaitingDeque.remove(pEntity);
-            pEntity.status = DownLoadEntity.DownLoadStatus.cancled;
-            mHandler.update(pEntity);
+            mHandler.cancleStatus(pEntity);
         }
     }
 
