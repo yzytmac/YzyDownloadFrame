@@ -1,18 +1,14 @@
 package com.example.yzydownloads;
 
-import android.os.SystemClock;
 import android.util.Log;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.RandomAccessFile;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.net.URLConnection;
 
 /**
  * Created by yzy on 2017/12/10.
@@ -42,25 +38,10 @@ public class DownLoadRunnable implements Runnable {
 
     @Override
     public void run() {
-        /*for (int i = mEntity.currentLength; i < mEntity.totalLength; ) {
-            if (isCancle || isPause) {
-                if(isPause) {
-                    mHandler.pauseStatus(mEntity);
-                }
-                if(isCancle) {
-                    mHandler.cancleStatus(mEntity);
-                }
-                return;
-            }
-            i+=10;
-            mHandler.progressStatus(mEntity,i);
-            SystemClock.sleep(1000);
-        }*/
-
         mIsSupportRange = checkIsSupportRange();
         File dir = new File(mEntity.localPath);
         mFile = new File(mEntity.localPath, mEntity.name);
-        if(!dir.exists()) {
+        if (!dir.exists()) {
             dir.mkdirs();
         }
         if (!mFile.exists()) {
@@ -70,79 +51,76 @@ public class DownLoadRunnable implements Runnable {
                 pE.printStackTrace();
             }
         }
-        if(mFile.length() == mTotalLength) {
-            mHandler.progressStatus(mEntity,100);
+        if (mFile.length() == mTotalLength) {
+            mHandler.progressStatus(mEntity, 100);
             return;
         }
-        if (mIsSupportRange) {
-            /*可以选择单线程也可选择多线程*/
-//            multiThreadDownLoad();
-            singleThreadDownLoad();
-        } else {
-            /*只能选择单线程*/
-            singleThreadDownLoad();
-        }
+        download();
     }
 
-    /**
-     * 单线程下载
-     */
-    private void singleThreadDownLoad() {
+    private void download() {
         InputStream is = null;
+        FileOutputStream os = null;
         RandomAccessFile vAccessFile = null;
         long lastTimeMillis = 0;
         try {
+            HttpURLConnection vConnection = (HttpURLConnection) mUrl.openConnection();
+            vConnection.setRequestMethod("GET");
+
             if (mIsSupportRange) {
-                HttpURLConnection vConnection = (HttpURLConnection) mUrl.openConnection();
                 vConnection.setRequestProperty("Range", "bytes=" + mFile.length() + "-");
-                vConnection.setRequestMethod("GET");
-                vConnection.connect();
-                is = vConnection.getInputStream();
-                vAccessFile = new RandomAccessFile(mFile,"rw");
+                vAccessFile = new RandomAccessFile(mFile, "rw");
                 vAccessFile.seek(mFile.length());
-                int len;
-                byte[] buffer = new byte[1024];
-                while ((len = is.read(buffer)) != -1) {
-                    if (isCancle || isPause) {
-                        if(isPause) {
-                            mHandler.pauseStatus(mEntity);
-                        }
-                        if(isCancle) {
-                            mHandler.cancleStatus(mEntity);
-                        }
-                        return;
+            } else {
+                os = new FileOutputStream(mFile);
+            }
+
+            vConnection.connect();
+            is = vConnection.getInputStream();
+            int len;
+            byte[] buffer = new byte[1024];
+            while ((len = is.read(buffer)) != -1) {
+                if (isCancle || isPause) {
+                    if (isPause) {
+                        mHandler.pauseStatus(mEntity);
                     }
+                    if (isCancle) {
+                        mHandler.cancleStatus(mEntity);
+                    }
+                    return;
+                }
+                if (mIsSupportRange) {
                     vAccessFile.write(buffer, 0, len);
-                    long progress = mFile.length() * 100 / mTotalLength;
-                    Log.e("yzy", "singleThreadDownLoad: " + progress);
-                    long vCurrentTimeMillis = System.currentTimeMillis();
-                    if(vCurrentTimeMillis - lastTimeMillis >=1500 || progress ==100) {
-                        lastTimeMillis = vCurrentTimeMillis;
-                        mHandler.progressStatus(mEntity,(int) progress);
-                    }
+                } else {
+                    os.write(buffer, 0, len);
+                }
+                long progress = mFile.length() * 100 / mTotalLength;
+                Log.e("yzy", "singleThreadDownLoad: " + progress);
+                long vCurrentTimeMillis = System.currentTimeMillis();
+                //一定要延时处理，否则频繁会频繁刷新listview，会导致点击时间失效
+                if (vCurrentTimeMillis - lastTimeMillis >= 1500 || progress == 100) {
+                    lastTimeMillis = vCurrentTimeMillis;
+                    mHandler.progressStatus(mEntity, (int) progress);
                 }
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
             try {
-                if(is!=null) {
+                if (is != null) {
                     is.close();
                 }
-                if(vAccessFile!=null) {
+                if (os != null) {
+                    os.close();
+                }
+                if (vAccessFile != null) {
                     vAccessFile.close();
                 }
             } catch (IOException pE) {
                 pE.printStackTrace();
             }
         }
-    }
-
-    /**
-     * 多线程下载
-     */
-    private void multiThreadDownLoad() {
-
     }
 
     /**
