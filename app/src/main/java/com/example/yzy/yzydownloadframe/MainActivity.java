@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         mPauseAllBt = (Button) findViewById(R.id.pause_all_bt);
 
 
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 100; i++) {
             DownLoadEntity vEntity = new DownLoadEntity();
             vEntity.status = DownLoadEntity.DownLoadStatus.idle;
             vEntity.totalLength = 100;

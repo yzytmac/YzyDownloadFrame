@@ -15,7 +15,7 @@ public class YzyHandler extends Handler {
             case complete:
             case cancled:
             case paused:
-                mService.checkNext(vEntity);
+                mService.doNext(vEntity);
                 break;
             default:
         }
