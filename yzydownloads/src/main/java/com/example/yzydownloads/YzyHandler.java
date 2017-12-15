@@ -31,7 +31,7 @@ public class YzyHandler extends Handler {
 
     public void progressStatus(DownLoadEntity pEntity, int pProgress) {
         pEntity.currentLength = pProgress;
-        if (pEntity.currentLength == pEntity.totalLength) {
+        if (pProgress ==100) {
             pEntity.status = DownLoadEntity.DownLoadStatus.complete;
         } else {
             pEntity.status = DownLoadEntity.DownLoadStatus.downloading;

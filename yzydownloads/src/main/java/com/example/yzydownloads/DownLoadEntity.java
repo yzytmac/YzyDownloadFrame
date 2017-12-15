@@ -10,12 +10,23 @@ public class DownLoadEntity implements Serializable {
     public String id;
     public String name;
     public String url;
-
-    public enum DownLoadStatus {idle, waiting, downloading, paused, cancled, complete}
-
+    public String localPath;
     public DownLoadStatus status;
     public int currentLength;
     public int totalLength;
+
+    public DownLoadEntity(String pUrl, String pLocalPath) {
+        url = pUrl;
+        localPath = pLocalPath;
+        String splits[] = url.split("/");
+        name = splits[splits.length - 1];//文件名
+        id = System.currentTimeMillis()+"";
+        status = DownLoadStatus.idle;
+    }
+
+    public enum DownLoadStatus {idle, waiting, downloading, paused, cancled, complete}
+
+
 
     @Override
     public String toString() {

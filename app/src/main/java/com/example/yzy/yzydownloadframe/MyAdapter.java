@@ -47,6 +47,7 @@ public class MyAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View pView, ViewGroup pViewGroup) {
+        final DownLoadEntity vEntity = mDatas.get(position);
         ViewHolder vHolder;
         if (pView == null) {
             pView = View.inflate(mActivity, R.layout.listview_item, null);
@@ -54,11 +55,10 @@ public class MyAdapter extends BaseAdapter {
             ImageView ivStart = pView.findViewById(R.id.id_start_icon);
             ImageView ivCancle = pView.findViewById(R.id.id_cancle_icon);
             ProgressBar bar = pView.findViewById(R.id.id_progress_bar);
-            vHolder = new ViewHolder(tv, ivStart, ivCancle,bar);
+            vHolder = new ViewHolder(tv, ivStart, ivCancle, bar);
             pView.setTag(vHolder);
         }
         vHolder = (ViewHolder) pView.getTag();
-        final DownLoadEntity vEntity = mDatas.get(position);
         vHolder.stratIv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View pView) {
@@ -72,13 +72,12 @@ public class MyAdapter extends BaseAdapter {
             }
         });
         vHolder.progressBar.setProgress(vEntity.currentLength);
-        vHolder.tv.setText("进度:" + vEntity.currentLength + "/" + vEntity.totalLength);
         if (vEntity.status == DownLoadEntity.DownLoadStatus.idle) {
             vHolder.stratIv.setImageResource(R.mipmap.start_icon);
             vHolder.tv.setText("空闲");
         } else if (vEntity.status == DownLoadEntity.DownLoadStatus.downloading) {
             vHolder.stratIv.setImageResource(R.mipmap.pause_icon);
-            vHolder.tv.setText("下载中");
+            vHolder.tv.setText("下载中:" + vEntity.currentLength);
         } else if (vEntity.status == DownLoadEntity.DownLoadStatus.paused) {
             vHolder.stratIv.setImageResource(R.mipmap.start_icon);
             vHolder.tv.setText("已暂停");

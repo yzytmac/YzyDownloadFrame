@@ -1,6 +1,7 @@
 package com.example.yzy.yzydownloadframe;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -42,16 +43,12 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         mLv = (ListView) findViewById(R.id.lv);
         mPauseAllBt = (Button) findViewById(R.id.pause_all_bt);
-
+        String localPath = Environment.getExternalStorageDirectory().getAbsolutePath()+"/00";
 
         for (int i = 0; i < 100; i++) {
-            DownLoadEntity vEntity = new DownLoadEntity();
-            vEntity.status = DownLoadEntity.DownLoadStatus.idle;
-            vEntity.totalLength = 100;
-            vEntity.currentLength = 0;
-            vEntity.name = "jpg" + i;
+            DownLoadEntity vEntity = new DownLoadEntity("http://ofbrh1334.bkt.clouddn.com/ddr.mp4",localPath);
             vEntity.id = "" + i;
-            vEntity.url = "www.baidu.com" + i;
+            vEntity.name = "ddr"+i+".mp4";
             mDatas.add(vEntity);
         }
         mAdapter = new MyAdapter(this);
