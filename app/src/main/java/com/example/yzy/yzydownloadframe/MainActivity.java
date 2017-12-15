@@ -17,23 +17,27 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
     private ArrayList<DownLoadEntity> mDatas = new ArrayList<>();
+    private DownLoadManager mDownLoadManager;
+    private ListView mLv;
+    private MyAdapter mAdapter;
+    private Button mPauseAllBt;
+    private int flag = 0;
+
+    /**
+     * 监听器，接受下载层的回调
+     */
     private DataObserver observer = new DataObserver() {
         @Override
         public void notifyUpdate(DownLoadEntity pEntity) {
-            int i = mDatas.indexOf(pEntity);//重写了equals方法，id相同就认为是同一个对象，但是其他属性不同
-            if (i != -1) {
-                mDatas.remove(i);
-                mDatas.add(i, pEntity);//替换的其实是除id以外的其他属性
+            int index = mDatas.indexOf(pEntity);//重写了equals方法，id相同就认为是同一个对象，但是其他属性不同
+            if (index != -1) {
+                mDatas.remove(index);
+                mDatas.add(index, pEntity);//替换的其实是除id以外的其他属性
                 mAdapter.notifyDataSetChanged();
             }
             Log.e("yzy", "notifyUpdate: " + pEntity);
         }
     };
-    private DownLoadManager mDownLoadManager;
-    private ListView mLv;
-    private MyAdapter mAdapter;
-    private Button mPauseAllBt;
-    private int i = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,8 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
         for (int i = 0; i < 100; i++) {
             DownLoadEntity vEntity = new DownLoadEntity("http://ofbrh1334.bkt.clouddn.com/ddr.mp4",localPath);
-            vEntity.id = "" + i;
-            vEntity.name = "ddr"+i+".mp4";
+            vEntity.name = "ddr"+i+".mp4";//此处只用了一个视频源，所以改一下文件的名字，不然所有的下载都是一个文件。
             mDatas.add(vEntity);
         }
         mAdapter = new MyAdapter(this);
@@ -70,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
     public void onClick(View pView) {
         switch (pView.getId()) {
             case R.id.pause_all_bt:
-                if (i++ % 2 == 0) {
+                if (flag++ % 2 == 0) {
                     mDownLoadManager.pauseAll();
                     mPauseAllBt.setText("恢复全部");
                 }else {

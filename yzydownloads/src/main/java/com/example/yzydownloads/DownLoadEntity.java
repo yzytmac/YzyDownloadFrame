@@ -1,6 +1,7 @@
 package com.example.yzydownloads;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * Created by yzy on 2017/12/10.
@@ -13,20 +14,25 @@ public class DownLoadEntity implements Serializable {
     public String localPath;
     public DownLoadStatus status;
     public int currentLength;
-    public int totalLength;
 
+    /**
+     * 构造函数
+     * @param pUrl 下载地址
+     * @param pLocalPath 存储在本地的位置，如“/sdcard/0/pic”，注意结尾不要斜杠“/”
+     */
     public DownLoadEntity(String pUrl, String pLocalPath) {
         url = pUrl;
         localPath = pLocalPath;
         String splits[] = url.split("/");
         name = splits[splits.length - 1];//文件名
-        id = System.currentTimeMillis()+"";
+        id = UUID.randomUUID().toString();
         status = DownLoadStatus.idle;
     }
 
+    /**
+     * 状态
+     */
     public enum DownLoadStatus {idle, waiting, downloading, paused, cancled, complete}
-
-
 
     @Override
     public String toString() {
