@@ -6,6 +6,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -19,7 +20,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 
 public class DownLoadService extends Service {
     /*正在下载的集合*/
-    private HashMap<String, DownLoadTask> mLoadingMap = new HashMap<>();
+    private HashMap<String, DownLoadTask> mDownLoadingMap = new HashMap<>();
     /*等待下载的队列*/
     private LinkedBlockingDeque<DownLoadEntity> mWaitingDeque = new LinkedBlockingDeque<>();
     /*线程池*/
@@ -28,11 +29,12 @@ public class DownLoadService extends Service {
 
     /**
      * 当有完成、暂停、取消时操作
+     *
      * @param pEntity
      */
     public void doNext(DownLoadEntity pEntity) {
         //当暂停、完成、取消时就要从下载队列中移除；
-        mLoadingMap.remove(pEntity);
+        mDownLoadingMap.remove(pEntity);
         //从等待队列中取出开始下载，
         DownLoadEntity vEntity = mWaitingDeque.poll();
         if (vEntity != null) {
@@ -56,10 +58,10 @@ public class DownLoadService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         DownLoadEntity vEntity = (DownLoadEntity) intent.getSerializableExtra(Constants.KEY_DOWNLOAD_ENTITY);
         int action = intent.getIntExtra(Constants.KEY_DOWNLOAD_ACTION, -1);
-        Log.e("yang", "点击前mDownLoadingTasks.size(): " + mLoadingMap.size());
+        Log.e("yang", "点击前mDownLoadingTasks.size(): " + mDownLoadingMap.size());
         Log.e("yang", "点击前mWaitingDeque.size(): " + mWaitingDeque.size());
         doAction(action, vEntity);
-        Log.e("yang", "点击后mDownLoadingTasks.size(): " + mLoadingMap.size());
+        Log.e("yang", "点击后mDownLoadingTasks.size(): " + mDownLoadingMap.size());
         Log.e("yang", "点击后mWaitingDeque.size(): " + mWaitingDeque.size());
         return START_NOT_STICKY;
     }
@@ -90,17 +92,37 @@ public class DownLoadService extends Service {
             case Constants.KEY_DOWNLOAD_ACTION_RESUME_ALL:
                 resumeAll();
                 break;
+            case Constants.KEY_DOWNLOAD_ACTION_CANCLE_ALL:
+                cancleAll();
+                break;
             default:
         }
     }
 
     private void resumeAll() {
         ArrayList<DownLoadEntity> vPausedEntrys = DataObservable.getInstance().getPausedEntrys();
-        if(vPausedEntrys!=null) {
+        if (vPausedEntrys != null) {
             for (DownLoadEntity vEntry : vPausedEntrys) {
                 addDownLoad(vEntry);
             }
         }
+    }
+
+    private void cancleAll() {
+        for (DownLoadEntity vEntity : mWaitingDeque) {
+            mHandler.cancleStatus(vEntity);
+        }
+        mWaitingDeque.clear();
+        for (Map.Entry<String, DownLoadTask> vEntrySet : mDownLoadingMap.entrySet()) {
+            DownLoadTask vDownLoadTask = vEntrySet.getValue();
+            vDownLoadTask.cancle();
+            DownLoadEntity vEntity = vDownLoadTask.mEntity;
+            File vFile = new File(vEntity.localPath, vEntity.name);
+            if(vFile.exists()) {
+                vFile.delete();
+            }
+        }
+        mDownLoadingMap.clear();
     }
 
     private void pauseAll() {
@@ -108,15 +130,14 @@ public class DownLoadService extends Service {
             mHandler.pauseStatus(vEntity);
         }
         mWaitingDeque.clear();
-        for (Map.Entry<String, DownLoadTask> vEntrySet : mLoadingMap.entrySet()) {
+        for (Map.Entry<String, DownLoadTask> vEntrySet : mDownLoadingMap.entrySet()) {
             vEntrySet.getValue().pause();
         }
-        mLoadingMap.clear();
-
+        mDownLoadingMap.clear();
     }
 
     private void addDownLoad(DownLoadEntity pEntity) {
-        if (mLoadingMap.size() >= Constants.MAX_DOWNLOAD_TASKS_NUM) {
+        if (mDownLoadingMap.size() >= Constants.MAX_DOWNLOAD_TASKS_NUM) {
             mWaitingDeque.offer(pEntity);
             mHandler.waitStatus(pEntity);
         } else {
@@ -130,8 +151,8 @@ public class DownLoadService extends Service {
      * @param pEntity
      */
     private void startDownLoad(DownLoadEntity pEntity) {
-        DownLoadTask vTask = new DownLoadTask(mExecutor,mHandler, pEntity);
-        mLoadingMap.put(pEntity.id, vTask);
+        DownLoadTask vTask = new DownLoadTask(mExecutor, mHandler, pEntity);
+        mDownLoadingMap.put(pEntity.id, vTask);
         vTask.start();
     }
 
@@ -151,10 +172,10 @@ public class DownLoadService extends Service {
      */
     private void pauseDownLoad(DownLoadEntity pEntity) {
         /*暂停后就应该从正在下载的集合中移除*/
-        DownLoadTask vTask = mLoadingMap.remove(pEntity.id);
+        DownLoadTask vTask = mDownLoadingMap.remove(pEntity.id);
         if (vTask != null) {
             vTask.pause();
-        }else {
+        } else {
             mWaitingDeque.remove(pEntity);
             mHandler.pauseStatus(pEntity);
         }
@@ -167,10 +188,16 @@ public class DownLoadService extends Service {
      */
     private void cancleDownLoad(DownLoadEntity pEntity) {
         /*暂停后就应该从正在下载的集合中移除*/
-        DownLoadTask vTask = mLoadingMap.remove(pEntity.id);
-        if (vTask != null) {
-            vTask.cancle();
-        }else {
+        DownLoadTask vDownLoadTask = mDownLoadingMap.remove(pEntity.id);
+        if (vDownLoadTask != null) {
+            vDownLoadTask.cancle();
+            DownLoadEntity vEntity = vDownLoadTask.mEntity;
+            File vFile = new File(vEntity.localPath, vEntity.name);
+            if(vFile.exists()) {
+                vFile.delete();
+            }
+
+        } else {
             mWaitingDeque.remove(pEntity);
             mHandler.cancleStatus(pEntity);
         }

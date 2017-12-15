@@ -48,7 +48,6 @@ public class DownLoadManager {
 
     /**
      * 暂停全部
-     *
      */
     public void pauseAll() {
         Intent vIntent = new Intent(mContext, DownLoadService.class);
@@ -70,11 +69,19 @@ public class DownLoadManager {
 
     /**
      * 恢复全部
-     *
      */
     public void resumeAll() {
         Intent vIntent = new Intent(mContext, DownLoadService.class);
         vIntent.putExtra(Constants.KEY_DOWNLOAD_ACTION, Constants.KEY_DOWNLOAD_ACTION_RESUME_ALL);
+        mContext.startService(vIntent);
+    }
+
+    /**
+     * 取消全部
+     */
+    public void cancleAll() {
+        Intent vIntent = new Intent(mContext, DownLoadService.class);
+        vIntent.putExtra(Constants.KEY_DOWNLOAD_ACTION, Constants.KEY_DOWNLOAD_ACTION_CANCLE_ALL);
         mContext.startService(vIntent);
     }
 

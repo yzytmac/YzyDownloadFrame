@@ -39,8 +39,10 @@ public class YzyHandler extends Handler {
         update(pEntity);
     }
 
+    /*如果是cancled，就把状态置位空闲*/
     public void cancleStatus(DownLoadEntity pEntity) {
-        pEntity.status = DownLoadEntity.DownLoadStatus.cancled;
+        pEntity.status = DownLoadEntity.DownLoadStatus.idle;
+        pEntity.currentLength =0;
         update(pEntity);
     }
 

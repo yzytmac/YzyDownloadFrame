@@ -10,7 +10,7 @@ import java.util.concurrent.ExecutorService;
 
 public class DownLoadTask {
     private YzyHandler mHandler;
-    private DownLoadEntity mEntity;
+    public DownLoadEntity mEntity;
 
     private ExecutorService mExecutor;
     private DownLoadRunnable mRunnable;

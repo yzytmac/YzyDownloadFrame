@@ -74,18 +74,23 @@ public class MyAdapter extends BaseAdapter {
         vHolder.progressBar.setProgress(vEntity.currentLength);
         if (vEntity.status == DownLoadEntity.DownLoadStatus.idle) {
             vHolder.stratIv.setImageResource(R.mipmap.start_icon);
+            vHolder.cancleIv.setVisibility(View.GONE);
             vHolder.tv.setText("空闲");
         } else if (vEntity.status == DownLoadEntity.DownLoadStatus.downloading) {
             vHolder.stratIv.setImageResource(R.mipmap.pause_icon);
+            vHolder.cancleIv.setVisibility(View.VISIBLE);
             vHolder.tv.setText("下载中:" + vEntity.currentLength);
         } else if (vEntity.status == DownLoadEntity.DownLoadStatus.paused) {
             vHolder.stratIv.setImageResource(R.mipmap.start_icon);
+            vHolder.cancleIv.setVisibility(View.VISIBLE);
             vHolder.tv.setText("已暂停");
         } else if (vEntity.status == DownLoadEntity.DownLoadStatus.waiting) {
             vHolder.stratIv.setImageResource(R.mipmap.pause_icon);
+            vHolder.cancleIv.setVisibility(View.VISIBLE);
             vHolder.tv.setText("等待中");
         } else if (vEntity.status == DownLoadEntity.DownLoadStatus.complete) {
             vHolder.stratIv.setImageResource(R.mipmap.complete_icon);
+            vHolder.cancleIv.setVisibility(View.GONE);
             vHolder.tv.setText("完成");
         }
 

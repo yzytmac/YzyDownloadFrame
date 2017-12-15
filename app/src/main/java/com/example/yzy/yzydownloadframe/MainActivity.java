@@ -16,12 +16,10 @@ import com.example.yzydownloads.DownLoadManager;
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
-    private DownLoadEntity mEntity;
     private ArrayList<DownLoadEntity> mDatas = new ArrayList<>();
     private DataObserver observer = new DataObserver() {
         @Override
         public void notifyUpdate(DownLoadEntity pEntity) {
-            mEntity = pEntity;
             int i = mDatas.indexOf(pEntity);//重写了equals方法，id相同就认为是同一个对象，但是其他属性不同
             if (i != -1) {
                 mDatas.remove(i);
@@ -81,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 break;
             case R.id.cancle_all_bt:
-                mDownLoadManager.resumeAll();
+                mDownLoadManager.cancleAll();
                 break;
             default:
         }
@@ -102,13 +100,12 @@ public class MainActivity extends AppCompatActivity {
                 break;
             case complete:
                 Toast.makeText(MainActivity.this, "已经完成啦，别点啦", Toast.LENGTH_SHORT).show();
-
                 break;
             default:
         }
     }
 
     public void onCancleIvClick(DownLoadEntity pEntity) {
-
+        mDownLoadManager.cancle(pEntity);
     }
 }
