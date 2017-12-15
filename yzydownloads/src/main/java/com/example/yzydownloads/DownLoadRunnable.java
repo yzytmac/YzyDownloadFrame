@@ -29,7 +29,7 @@ public class DownLoadRunnable implements Runnable{
 
         for (int i = mEntity.currentLength; i < mEntity.totalLength; ) {
             if (isCancle || isPause) {
-                mEntity.status = isPause ? DownLoadEntity.DownLoadStatus.pause : DownLoadEntity.DownLoadStatus.cancle;
+                mEntity.status = isPause ? DownLoadEntity.DownLoadStatus.paused : DownLoadEntity.DownLoadStatus.cancled;
                 mHandler.update(mEntity);
                 // TODO: 2017/12/10
                 return;

@@ -13,8 +13,8 @@ public class YzyHandler extends Handler {
         DownLoadEntity vEntity = (DownLoadEntity) msg.obj;
         switch (vEntity.status) {
             case complete:
-            case cancle:
-            case pause:
+            case cancled:
+            case paused:
                 mService.checkNext(vEntity);
                 break;
             default:

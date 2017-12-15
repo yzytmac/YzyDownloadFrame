@@ -79,7 +79,7 @@ public class MyAdapter extends BaseAdapter {
         } else if (vEntity.status == DownLoadEntity.DownLoadStatus.downloading) {
             vHolder.stratIv.setImageResource(R.mipmap.pause_icon);
             vHolder.tv.setText("下载中");
-        } else if (vEntity.status == DownLoadEntity.DownLoadStatus.pause) {
+        } else if (vEntity.status == DownLoadEntity.DownLoadStatus.paused) {
             vHolder.stratIv.setImageResource(R.mipmap.start_icon);
             vHolder.tv.setText("已暂停");
         } else if (vEntity.status == DownLoadEntity.DownLoadStatus.waiting) {

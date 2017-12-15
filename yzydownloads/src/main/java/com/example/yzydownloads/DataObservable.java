@@ -1,7 +1,6 @@
 package com.example.yzydownloads;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Observable;
@@ -34,7 +33,7 @@ public class DataObservable extends Observable {
     public ArrayList<DownLoadEntity> getPausedEntrys() {
         ArrayList<DownLoadEntity> vList = null;
         for (Map.Entry<String, DownLoadEntity> vEntry : operationEntitys.entrySet()) {
-            if (vEntry.getValue().status == DownLoadEntity.DownLoadStatus.pause) {
+            if (vEntry.getValue().status == DownLoadEntity.DownLoadStatus.paused) {
                 if (vList == null) {
                     vList = new ArrayList<>();
                 }

@@ -102,7 +102,7 @@ public class DownLoadService extends Service {
 
     private void pauseAll() {
         for (DownLoadEntity vEntity : mWaitingDeque) {
-            vEntity.status = DownLoadEntity.DownLoadStatus.pause;
+            vEntity.status = DownLoadEntity.DownLoadStatus.paused;
             mHandler.update(vEntity);
         }
         mWaitingDeque.clear();
@@ -155,7 +155,7 @@ public class DownLoadService extends Service {
             vTask.pause();
         }else {
             mWaitingDeque.remove(pEntity);
-            pEntity.status = DownLoadEntity.DownLoadStatus.pause;
+            pEntity.status = DownLoadEntity.DownLoadStatus.paused;
             mHandler.update(pEntity);
         }
     }
@@ -172,7 +172,7 @@ public class DownLoadService extends Service {
             vTask.cancle();
         }else {
             mWaitingDeque.remove(pEntity);
-            pEntity.status = DownLoadEntity.DownLoadStatus.cancle;
+            pEntity.status = DownLoadEntity.DownLoadStatus.cancled;
             mHandler.update(pEntity);
         }
     }

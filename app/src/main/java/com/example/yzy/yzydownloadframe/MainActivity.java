@@ -1,6 +1,5 @@
 package com.example.yzy.yzydownloadframe;
 
-import android.app.ActionBar;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -97,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
             case idle:
                 mDownLoadManager.add(pEntity);
                 break;
-            case pause:
+            case paused:
                 mDownLoadManager.resume(pEntity);
                 break;
             case downloading:
