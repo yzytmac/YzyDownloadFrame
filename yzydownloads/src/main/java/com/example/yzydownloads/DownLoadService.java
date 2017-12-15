@@ -129,9 +129,9 @@ public class DownLoadService extends Service {
      * @param pEntity
      */
     private void startDownLoad(DownLoadEntity pEntity) {
-        DownLoadTask vTask = new DownLoadTask(mHandler, pEntity);
+        DownLoadTask vTask = new DownLoadTask(mExecutor,mHandler, pEntity);
         mDownLoadingTasks.put(pEntity.id, vTask);
-        mExecutor.execute(vTask);
+        vTask.start();
     }
 
     /**

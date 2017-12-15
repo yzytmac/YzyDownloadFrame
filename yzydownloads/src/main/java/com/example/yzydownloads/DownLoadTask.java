@@ -2,55 +2,36 @@ package com.example.yzydownloads;
 
 import android.os.SystemClock;
 
+import java.util.concurrent.ExecutorService;
+
 /**
  * Created by yzy on 2017/12/10.
  */
 
-public class DownLoadTask implements Runnable {
+public class DownLoadTask {
     private YzyHandler mHandler;
     private DownLoadEntity mEntity;
-    private volatile boolean isPause, isCancle;
 
-    public DownLoadTask(YzyHandler pHandler, DownLoadEntity pEntity) {
+    private ExecutorService mExecutor;
+    private DownLoadRunnable mRunnable;
+
+    public DownLoadTask(ExecutorService pExecutor,YzyHandler pHandler, DownLoadEntity pEntity) {
+        mExecutor=pExecutor;
         mHandler = pHandler;
         mEntity = pEntity;
     }
 
     public void pause() {
-        isPause = true;
+        mRunnable.pause();
     }
 
     public void cancle() {
-        isCancle = true;
+        mRunnable.cancle();
     }
 
-    @Override
-    public void run() {
-        start();
-    }
-
-    private void start() {
-        mEntity.status = DownLoadEntity.DownLoadStatus.downloading;
-//        DataObservable.getInstance().postStatus(mEntity);
-        mHandler.update(mEntity);
-
-        for (int i = mEntity.currentLength; i < mEntity.totalLength; ) {
-            if (isCancle || isPause) {
-                mEntity.status = isPause ? DownLoadEntity.DownLoadStatus.pause : DownLoadEntity.DownLoadStatus.cancle;
-//                DataObservable.getInstance().postStatus(mEntity);
-                mHandler.update(mEntity);
-                // TODO: 2017/12/10
-                return;
-            }
-            i+=10;
-            mEntity.currentLength += 10;
-//            DataObservable.getInstance().postStatus(mEntity);
-            mHandler.update(mEntity);
-            SystemClock.sleep(1000);
-        }
-        mEntity.status = DownLoadEntity.DownLoadStatus.complete;
-//        DataObservable.getInstance().postStatus(mEntity);
-        mHandler.update(mEntity);
+    public void start() {
+        mRunnable = new DownLoadRunnable(mHandler,mEntity);
+        mExecutor.execute(mRunnable);
     }
 
 
