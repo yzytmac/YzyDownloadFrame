@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    public void onBtClick(DownLoadEntity pEntity) {
+    public void onStartIvClick(DownLoadEntity pEntity) {
         switch (pEntity.status) {
             case idle:
                 mDownLoadManager.add(pEntity);
@@ -110,5 +110,9 @@ public class MainActivity extends AppCompatActivity {
                 break;
             default:
         }
+    }
+
+    public void onCancleIvClick(DownLoadEntity pEntity) {
+
     }
 }

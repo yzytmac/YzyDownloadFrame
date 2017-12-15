@@ -1,11 +1,10 @@
 package com.example.yzy.yzydownloadframe;
 
-import android.content.Context;
-import android.text.Layout;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.yzydownloads.DownLoadEntity;
@@ -26,7 +25,7 @@ public class MyAdapter extends BaseAdapter {
         mActivity = context;
     }
 
-    public void setData(List<DownLoadEntity> pDatas){
+    public void setData(List<DownLoadEntity> pDatas) {
         mDatas = pDatas;
         this.notifyDataSetChanged();
     }
@@ -49,32 +48,46 @@ public class MyAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View pView, ViewGroup pViewGroup) {
         ViewHolder vHolder;
-        if(pView == null) {
+        if (pView == null) {
             pView = View.inflate(mActivity, R.layout.listview_item, null);
-            TextView tv = pView.findViewById(R.id.item_tv);
-            Button bt = pView.findViewById(R.id.item_bt);
-            vHolder = new ViewHolder(tv,bt);
+            TextView tv = pView.findViewById(R.id.id_status_tv);
+            ImageView ivStart = pView.findViewById(R.id.id_start_icon);
+            ImageView ivCancle = pView.findViewById(R.id.id_cancle_icon);
+            ProgressBar bar = pView.findViewById(R.id.id_progress_bar);
+            vHolder = new ViewHolder(tv, ivStart, ivCancle,bar);
             pView.setTag(vHolder);
         }
         vHolder = (ViewHolder) pView.getTag();
         final DownLoadEntity vEntity = mDatas.get(position);
-        vHolder.bt.setOnClickListener(new View.OnClickListener() {
+        vHolder.stratIv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View pView) {
-                mActivity.onBtClick(vEntity);
+                mActivity.onStartIvClick(vEntity);
             }
         });
-        vHolder.tv.setText("进度:"+vEntity.currentLength+"/"+ vEntity.totalLength);
-        if(vEntity.status == DownLoadEntity.DownLoadStatus.idle) {
-            vHolder.bt.setText("开始");
-        }else if(vEntity.status == DownLoadEntity.DownLoadStatus.downloading) {
-            vHolder.bt.setText("暂停");
-        }else if(vEntity.status == DownLoadEntity.DownLoadStatus.pause) {
-            vHolder.bt.setText("恢复");
-        }else if(vEntity.status == DownLoadEntity.DownLoadStatus.waiting) {
-            vHolder.bt.setText("等待");
-        }else if(vEntity.status == DownLoadEntity.DownLoadStatus.complete) {
-            vHolder.bt.setText("完成");
+        vHolder.cancleIv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View pView) {
+                mActivity.onCancleIvClick(vEntity);
+            }
+        });
+        vHolder.progressBar.setProgress(vEntity.currentLength);
+        vHolder.tv.setText("进度:" + vEntity.currentLength + "/" + vEntity.totalLength);
+        if (vEntity.status == DownLoadEntity.DownLoadStatus.idle) {
+            vHolder.stratIv.setImageResource(R.mipmap.start_icon);
+            vHolder.tv.setText("空闲");
+        } else if (vEntity.status == DownLoadEntity.DownLoadStatus.downloading) {
+            vHolder.stratIv.setImageResource(R.mipmap.pause_icon);
+            vHolder.tv.setText("下载中");
+        } else if (vEntity.status == DownLoadEntity.DownLoadStatus.pause) {
+            vHolder.stratIv.setImageResource(R.mipmap.start_icon);
+            vHolder.tv.setText("已暂停");
+        } else if (vEntity.status == DownLoadEntity.DownLoadStatus.waiting) {
+            vHolder.stratIv.setImageResource(R.mipmap.pause_icon);
+            vHolder.tv.setText("等待中");
+        } else if (vEntity.status == DownLoadEntity.DownLoadStatus.complete) {
+            vHolder.stratIv.setImageResource(R.mipmap.complete_icon);
+            vHolder.tv.setText("完成");
         }
 
         return pView;
@@ -82,11 +95,15 @@ public class MyAdapter extends BaseAdapter {
 
 }
 
-class ViewHolder{
+class ViewHolder {
     public TextView tv;
-    public Button bt;
-    public ViewHolder(TextView pTv, Button pBt) {
-        this.tv = pTv;
-        this.bt = pBt;
+    public ImageView stratIv, cancleIv;
+    public ProgressBar progressBar;
+
+    public ViewHolder(TextView pTv, ImageView pStratIv, ImageView pCancleIv, ProgressBar pBar) {
+        tv = pTv;
+        stratIv = pStratIv;
+        cancleIv = pCancleIv;
+        progressBar = pBar;
     }
 }

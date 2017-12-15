@@ -3,7 +3,10 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/YzyDownloadFrame.iml" filepath="$PROJECT_DIR$/YzyDownloadFrame.iml" />
+      <module fileurl="file://$PROJECT_DIR$/YzyDownloadFrame.iml" filepath="$PROJECT_DIR$/YzyDownloadFrame.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/yzydownloads/yzydownloads.iml" filepath="$PROJECT_DIR$/yzydownloads/yzydownloads.iml" />
       <module fileurl="file://$PROJECT_DIR$/yzydownloads/yzydownloads.iml" filepath="$PROJECT_DIR$/yzydownloads/yzydownloads.iml" />
     </modules>
   </component>
