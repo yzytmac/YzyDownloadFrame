@@ -18,5 +18,6 @@
 4、DataObserver中会回调下载情况，将DownLoadEntity又返回，回调在主线程中回调，可以直接刷新ui  
 5、权限问题，需要申请网络权限、读写sd卡权限。如果在6.0及以上系统中使用需要动态申请读写sd卡的权限  
 6、有任何疑问欢迎发邮件到yzytmac@163.com 欢迎提交代码  
-
+- 如果觉得有用，不吝啬在右上角给我一个Star。谢谢！！  
+![](https://raw.githubusercontent.com/yzytmac/yzytmac.github.io/master/images/star.png)  
 还有一些小细节有待完善。未完待续。。。。。。
